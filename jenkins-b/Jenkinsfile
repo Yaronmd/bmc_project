@@ -1,0 +1,14 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Run Hello Script') {
+            steps {
+                script {
+                    echo "Running hello.py..."
+                    sh 'chmod +x /scripts/hello.py && python3 /scripts/hello.py'
+                }
+            }
+        }
+    }
+}

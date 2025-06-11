@@ -1,18 +1,23 @@
 pipeline {
     agent any
 
-    environment {
-        JENKINS_B_URL = credentials('jenkins-b-url')
-        TARGET_JOB_NAME = 'job-b'
-        JENKINS_USER = 'admin'
-        JENKINS_API_TOKEN = credentials('jenkins-api-token')
-    }
-
     stages {
-        stage('Run validation script') {
+        stage('Load .env') {
             steps {
-                echo "Running validate_ls.sh..."
-                sh 'chmod +x /scripts/validate_ls.sh && /scripts/validate_ls.sh'
+                script {
+                    def envProps = readProperties file: '/scripts/.env'
+
+                    env.JENKINS_B_URL = envProps['JENKINS_B_URL']
+                    env.TARGET_JOB_NAME = envProps['TARGET_JOB_NAME']
+                    env.JENKINS_USER = envProps['JENKINS_USER']
+                    env.JENKINS_API_TOKEN = envProps['JENKINS_API_TOKEN']
+                }
+            }
+        }
+
+        stage('Trigger Jenkins B') {
+            steps {
+                sh '/scripts/validate_ls.sh'
             }
         }
     }

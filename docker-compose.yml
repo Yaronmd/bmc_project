@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  jenkins-a:
+    build: ./jenkins-a
+    container_name: jenkins-a
+    ports:
+      - "8080:8080"
+    volumes:
+      - jenkins-a-data:/var/jenkins_home
+      - ./jenkins-a/scripts:/scripts
+    env_file:
+      - .env
+  jenkins-b:
+    build: ./jenkins-b
+    container_name: jenkins-b
+    ports:
+      - "8081:8080"
+    volumes:
+      - jenkins-b-data:/var/jenkins_home
+      - ./jenkins-b/scripts:/scripts
+
+volumes:
+  jenkins-a-data:
+  jenkins-b-data:

@@ -10,7 +10,7 @@ services:
       - jenkins-a-data:/var/jenkins_home
       - ./jenkins-a/scripts:/scripts
     env_file:
-      - .env
+      - ./jenkins-a/scripts/.env
   jenkins-b:
     build: ./jenkins-b
     container_name: jenkins-b

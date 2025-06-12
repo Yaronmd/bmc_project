@@ -107,7 +107,7 @@ JENKINS_USER=admin
 JENKINS_API_TOKEN=your_token_here
 ```
 
-> ⚠️ Make sure `docker-compose.yml` includes:
+> Make sure `docker-compose.yml` includes:
 
 ```yaml
 env_file:
@@ -122,7 +122,7 @@ docker compose restart jenkins-a
 
 
 
-## 🧼 Clean Up
+## Clean Up
 
 ```bash
 docker compose down -v
@@ -130,6 +130,6 @@ docker compose down -v
 
 ---
 
-## 👨‍💻 Developed by
+## Developed by
 
 Yaron Mordechai

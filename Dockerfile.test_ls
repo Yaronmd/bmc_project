@@ -6,11 +6,14 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-COPY jenkins-a/scripts ./scripts
+# COPY jenkins-a/scripts ./scripts
 COPY jenkins-a/tests/test_validate_ls.py .
+
+COPY jenkins-a/scripts ./scripts
+
 
 RUN mkdir -p ./scripts/data
 
-RUN chmod +x ./scripts/*.sh
+RUN find ./scripts -name "*.sh" -exec chmod +x {} \;
 
 CMD ["python", "test_validate_ls.py"]

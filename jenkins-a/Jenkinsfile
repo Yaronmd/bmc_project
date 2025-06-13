@@ -1,19 +1,26 @@
 pipeline {
     agent any
 
-    
     stages {
-
         stage('Trigger Jenkins B') {
-            environment {
-            JENKINS_B_URL = credentials('jenkins_b_url_cred')
-            TARGET_JOB_NAME = 'job-b'
-            JENKINS_USER = credentials('jenkins_api_token_cred').username
-            JENKINS_API_TOKEN = credentials('jenkins_api_token_cred').password
-        }
-
             steps {
-                sh '/scripts/validate_ls.sh'
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'jenkins_api_token_cred',
+                        usernameVariable: 'JENKINS_USER',
+                        passwordVariable: 'JENKINS_API_TOKEN'
+                    ),
+                    string(
+                        credentialsId: 'jenkins_b_url_cred',
+                        variable: 'JENKINS_B_URL'
+                    )
+                ]) {
+                    sh '''
+                    echo "Triggering Jenkins B on $JENKINS_B_URL"
+                    echo "Using user: $JENKINS_USER"
+                    /scripts/validate_ls.sh
+                    '''
+                }
             }
         }
     }

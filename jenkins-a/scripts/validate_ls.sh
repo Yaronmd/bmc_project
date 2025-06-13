@@ -5,6 +5,12 @@ TRIGGER_SCRIPT="$SCRIPT_DIR/trigger_jenkins_b.sh"
 MONITOR_SCRIPT="$SCRIPT_DIR/monitor_jenkins_b.sh"
 TARGET_DIR="$SCRIPT_DIR/data"
 
+if [[ ! -x "$TRIGGER_SCRIPT" || ! -x "$MONITOR_SCRIPT" ]]; then
+  echo "Required scripts are missing or not executable!"
+  exit 1
+fi
+
+
 echo "DEBUG: Listing files in $TARGET_DIR"
 ls -l "$TARGET_DIR"
 

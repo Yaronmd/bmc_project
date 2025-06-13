@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        TARGET_JOB_NAME = 'job-b'
+    }
+
     stages {
         stage('Trigger Jenkins B') {
             steps {
@@ -11,17 +15,40 @@ pipeline {
                         passwordVariable: 'JENKINS_API_TOKEN'
                     ),
                     string(
-                        credentialsId: 'jenkins_b_url_cred',
+                        credentialsId: 'JENKINS_B_URL', 
                         variable: 'JENKINS_B_URL'
                     )
                 ]) {
-                    sh '''
-                    echo "Triggering Jenkins B on $JENKINS_B_URL"
-                    echo "Using user: $JENKINS_USER"
-                    /scripts/validate_ls.sh
-                    '''
+                    script {
+                        echo "🔑 Using user: ${JENKINS_USER}"
+                        echo "🌐 Target Jenkins B URL: ${JENKINS_B_URL}"
+
+                        def status = sh (
+                            script: '''
+                            set -e
+                            echo "🚀 Running validation script..."
+                            /scripts/validate_ls.sh
+                            ''',
+                            returnStatus: true
+                        )
+
+                        if (status != 0) {
+                            error("❌ validate_ls.sh failed with status ${status}")
+                        } else {
+                            echo "✅ validate_ls.sh ran successfully!"
+                        }
+                    }
                 }
             }
+        }
+    }
+
+    post {
+        failure {
+            echo '❗ Build failed. Check logs for details.'
+        }
+        success {
+            echo '🎉 Build succeeded!'
         }
     }
 }

@@ -2,30 +2,13 @@ pipeline {
     agent any
 
     environment {
-        JENKINS_B_URL = credentials('JENKINS_B_URL_CRED') 
-        TARGET_JOB_NAME = 'job-b'  
-        JENKINS_USER = credentials('JENKINS_USER_CRED')
-        JENKINS_API_TOKEN = credentials('JENKINS_API_TOKEN_CRED')
+        JENKINS_B_URL = credentials('jenkins_b_url_cred')
+        TARGET_JOB_NAME = 'job-b'
+        JENKINS_USER = credentials('jenkins_api_token_cred').username
+        JENKINS_API_TOKEN = credentials('jenkins_api_token_cred').password
     }
 
     stages {
-        stage('Load .env (optional fallback)') {
-            steps {
-                script {
-                    if (!env.JENKINS_B_URL || !env.JENKINS_USER || !env.JENKINS_API_TOKEN) {
-                        echo "Credentials not found — loading from .env"
-                        def envProps = readProperties file: '/scripts/.env'
-                        env.JENKINS_B_URL = env.JENKINS_B_URL ?: envProps['JENKINS_B_URL']
-                        env.TARGET_JOB_NAME = env.TARGET_JOB_NAME ?: envProps['TARGET_JOB_NAME']
-                        env.JENKINS_USER = env.JENKINS_USER ?: envProps['JENKINS_USER']
-                        env.JENKINS_API_TOKEN = env.JENKINS_API_TOKEN ?: envProps['JENKINS_API_TOKEN']
-                    } else {
-                        echo "Using Jenkins Credentials"
-                    }
-                }
-            }
-        }
-
         stage('Trigger Jenkins B') {
             steps {
                 sh '/scripts/validate_ls.sh'

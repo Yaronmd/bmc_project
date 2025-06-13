@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 import requests
 
-# טען את הקובץ .env שנמצא תחת scripts
 env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../scripts/.env'))
 load_dotenv(dotenv_path=env_path)
 
@@ -10,10 +9,9 @@ JENKINS_A_URL = os.getenv("JENKINS_A_URL")
 JENKINS_USER = os.getenv("JENKINS_USER")
 JENKINS_TOKEN = os.getenv("JENKINS_API_TOKEN")
 
-# ניפוי באג – הדפסת משתנים
 print("JENKINS_A_URL:", JENKINS_A_URL)
 print("JENKINS_USER:", JENKINS_USER)
-print("JENKINS_TOKEN:", '*' * len(JENKINS_TOKEN or ""))  # הסתרה בסיסית
+print("JENKINS_TOKEN:", '*' * len(JENKINS_TOKEN or ""))
 
 def get_crumb():
     url = f"{JENKINS_A_URL}/crumbIssuer/api/json"

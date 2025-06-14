@@ -14,10 +14,11 @@ This project demonstrates how **Jenkins A** triggers a job on **Jenkins B** usin
 
 ### Jenkins B
 
-- The triggered job executes a Python program (`hello.py`) that writes a file containing:
+- The triggered job executes a Python program (`hello.py`) that writes a file `/tmp/hello_bmc.txt` containing:
   ```
   Hello BMC
   ```
+- A verification script (`verify_hello.sh`) ensures the file was created and contains the expected content.
 
 ---
 

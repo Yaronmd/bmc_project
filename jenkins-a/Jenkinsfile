@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'docker-enabled-agent'
-    }
+    agent any
 
     environment {
         TARGET_JOB_NAME = 'job-b'

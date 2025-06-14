@@ -3,12 +3,11 @@ FROM python:3.10-slim
 RUN apt-get update && \
     apt-get install -y bash curl && \
     apt-get clean
-
+COPY config/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 WORKDIR /app
 
-# COPY jenkins-a/scripts ./scripts
-COPY jenkins-a/tests/test_validate_ls.py .
-
+COPY jenkins-a/tests/ .
 COPY jenkins-a/scripts ./scripts
 
 
@@ -16,4 +15,4 @@ RUN mkdir -p ./scripts/data
 
 RUN find ./scripts -name "*.sh" -exec chmod +x {} \;
 
-CMD ["python", "test_validate_ls.py"]
+CMD ["pytest", "-s"]

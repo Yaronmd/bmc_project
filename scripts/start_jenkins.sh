@@ -1,19 +1,19 @@
 #!/bin/bash
-echo "🧼 Cleaning up old Jenkins A volume..."
+echo "Cleaning up old Jenkins A volume..."
 docker volume rm -f bmc_project_jenkins-a-data 2>/dev/null
 
 
-echo "🚀 Starting Jenkins A & B with Docker Compose..."
+echo "Starting Jenkins A & B with Docker Compose..."
 docker compose up -d
 
-echo -e "\n⏳ Waiting for Jenkins A & B to initialize..."
+echo -e "\n Waiting for Jenkins A & B to initialize..."
 
 wait_for_password_file() {
   CONTAINER=$1
   FILE=$2
   NAME=$3
 
-  echo -n "🔍 Checking $NAME"
+  echo -n "Checking $NAME"
   for i in {1..60}; do
     docker exec "$CONTAINER" test -f "$FILE" && break
     echo -n "."

@@ -48,6 +48,7 @@ This project demonstrates how **Jenkins A** triggers a job on **Jenkins B** usin
 │   ├── Jenkinsfile             # Jenkins pipeline file for Jenkins B
 │   ├── scripts                 # Scripts used by Jenkins B
 │   │   └── hello.py             # Example Python script run by Jenkins B
+|   |   └── validate_hello_file.sh  # Script that verifies the Hello BMC file was created 
 │   └── tests                   # Tests for Jenkins B logic
 │       └── test_hello_script.py # Test for hello.py script
 ├── README.md                   # Project documentation

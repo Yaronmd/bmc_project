@@ -13,7 +13,7 @@ wait_for_password_file() {
   FILE=$2
   NAME=$3
 
-  echo -n "🔍 Checking $NAME"
+  echo -n "Checking $NAME"
   for i in {1..60}; do
     docker exec "$CONTAINER" test -f "$FILE" && break
     echo -n "."

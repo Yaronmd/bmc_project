@@ -1,7 +1,6 @@
 ## Jenkins A → Jenkins B Pipeline
 
-This project demonstrates how **Jenkins A** triggers a job on **Jenkins B** using a secure setup with credentials and API tokens.
-
+This project demonstrates how **Jenkins A** triggers a job on **Jenkins B** using a secure setup with credentials and API tokens. Both Jenkins instances are connected to GitHub for Pipeline as Code using Jenkinsfiles stored in the repository.
 ---
 
 ## How it works
@@ -14,10 +13,11 @@ This project demonstrates how **Jenkins A** triggers a job on **Jenkins B** usin
 
 ### Jenkins B
 
-- The triggered job executes a Python program (`hello.py`) that writes a file containing:
+- The triggered job executes a Python program (`hello.py`) that writes a file `/tmp/hello_bmc.txt` containing:
   ```
   Hello BMC
   ```
+- A verification script (`verify_hello.sh`) ensures the file was created and contains the expected content.
 
 ---
 
@@ -48,6 +48,7 @@ This project demonstrates how **Jenkins A** triggers a job on **Jenkins B** usin
 │   ├── Jenkinsfile             # Jenkins pipeline file for Jenkins B
 │   ├── scripts                 # Scripts used by Jenkins B
 │   │   └── hello.py             # Example Python script run by Jenkins B
+|   |   └── validate_hello_file.sh  # Script that verifies the Hello BMC file was created 
 │   └── tests                   # Tests for Jenkins B logic
 │       └── test_hello_script.py # Test for hello.py script
 ├── README.md                   # Project documentation

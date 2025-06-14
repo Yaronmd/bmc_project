@@ -2,6 +2,10 @@ import subprocess
 import os
 
 def test_hello_script():
+    """
+    Test that hello.py runs successfully and creates the expected output file
+    containing 'Hello BMC'. Prints relevant debug information.
+    """
     print("Running hello.py script...")
     result = subprocess.run(
         ["python3", "jenkins-b/scripts/hello.py"],

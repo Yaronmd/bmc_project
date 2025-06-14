@@ -20,22 +20,22 @@ pipeline {
                     )
                 ]) {
                     script {
-                        echo "🔑 Using user: ${JENKINS_USER}"
-                        echo "🌐 Target Jenkins B URL: ${JENKINS_B_URL}"
+                        echo "Using user: ${JENKINS_USER}"
+                        echo "Target Jenkins B URL: ${JENKINS_B_URL}"
 
                         def status = sh (
                             script: '''
                             set -e
-                            echo "🚀 Running validation script..."
+                            echo "Running validation script..."
                             /scripts/validate_ls.sh
                             ''',
                             returnStatus: true
                         )
 
                         if (status != 0) {
-                            error("❌ validate_ls.sh failed with status ${status}")
+                            error("validate_ls.sh failed with status ${status}")
                         } else {
-                            echo "✅ validate_ls.sh ran successfully!"
+                            echo "validate_ls.sh ran successfully"
                         }
                     }
                 }
@@ -45,10 +45,10 @@ pipeline {
 
     post {
         failure {
-            echo '❗ Build failed. Check logs for details.'
+            echo 'Build failed. Check logs for details.'
         }
         success {
-            echo '🎉 Build succeeded!'
+            echo 'Build succeeded!'
         }
     }
 }

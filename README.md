@@ -110,6 +110,15 @@ These credentials will be referenced in the Jenkinsfile to securely trigger Jenk
 ```
 
 This will start Jenkins A and B via Docker Compose.
+To see the initial admin password for both Jenkins instances:
+
+```bash
+echo "Jenkins A password:"
+docker exec jenkins-a cat /var/jenkins_home/secrets/initialAdminPassword || echo "Jenkins A not ready"
+
+echo "Jenkins B password:"
+docker exec jenkins-b cat /var/jenkins_home/secrets/initialAdminPassword || echo "Jenkins B not ready"
+```
 
 ```bash
 ./scripts/run_tests.sh

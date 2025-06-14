@@ -11,7 +11,7 @@ pipeline {
                 script {
                     echo "Running run_tests.sh..."
                     def testStatus = sh(
-                        script: './scripts/run_tests.sh',
+                        script: '/shared-scripts/run_tests.sh',
                         returnStatus: true
                     )
                     if (testStatus != 0) {

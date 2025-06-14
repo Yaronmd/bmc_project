@@ -5,8 +5,12 @@ pipeline {
         stage('Run Hello Script') {
             steps {
                 script {
-                    echo "Running hello.py..."
-                    sh 'chmod +x /scripts/hello.py && python3 /scripts/hello.py'
+                    echo "Running hello.py and verifying output..."
+                    sh '''
+                        chmod +x /scripts/hello.py
+                        python3 /scripts/hello.py
+                        /scripts/verify_hello.sh
+                    '''
                 }
             }
         }

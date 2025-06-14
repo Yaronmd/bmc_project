@@ -8,6 +8,7 @@ services:
     volumes:
       - jenkins-a-data:/var/jenkins_home
       - ./jenkins-a/scripts:/scripts
+      - /var/run/docker.sock:/var/run/docker.sock
   jenkins-b:
     build: ./jenkins-b
     container_name: jenkins-b
@@ -16,6 +17,7 @@ services:
     volumes:
       - jenkins-b-data:/var/jenkins_home
       - ./jenkins-b/scripts:/scripts
+      - /var/run/docker.sock:/var/run/docker.sock
 
 
 volumes:

@@ -8,7 +8,12 @@ services:
     volumes:
       - jenkins-a-data:/var/jenkins_home
       - ./jenkins-a/scripts:/scripts
+      - ./shared-scripts:/shared-scripts
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./docker:/docker
+      - ./config:/docker/config
+      # - .:/workspace
+
   jenkins-b:
     build: ./jenkins-b
     container_name: jenkins-b
@@ -17,8 +22,8 @@ services:
     volumes:
       - jenkins-b-data:/var/jenkins_home
       - ./jenkins-b/scripts:/scripts
+      - ./shared-scripts:/shared-scripts
       - /var/run/docker.sock:/var/run/docker.sock
-
 
 volumes:
   jenkins-a-data:

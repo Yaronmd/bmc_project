@@ -8,7 +8,10 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY scripts/ /scripts/
+
+COPY config/requirements.txt .
+COPY jenkins-a/tests/ .
+COPY jenkins-a/scripts ./scripts
+
 RUN chmod +x /scripts/*.sh
 
-# אל תחזיר ל-USER jenkins כדי להריץ כ-root
-# USER jenkins

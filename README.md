@@ -1,8 +1,23 @@
-# Jenkins A → B Trigger Project
+## Jenkins A → Jenkins B Pipeline
 
-This project sets up **two Jenkins servers** (`jenkins-a` and `jenkins-b`) using Docker Compose.
-When a job on `jenkins-a` is triggered, it checks a condition and, if met, triggers a job on `jenkins-b` using the Jenkins REST API, including authentication and CSRF crumb handling.
+This project demonstrates how **Jenkins A** triggers a job on **Jenkins B** using a secure setup with credentials and API tokens.
 
+---
+
+## How it works
+
+### Jenkins A
+
+- Runs a job that executes `ls` on a target directory.
+- Counts the total number of "word-like" parts in file names (e.g., words separated by `-` or `_`).
+- If the total count is greater than `3`, Jenkins A securely triggers a job on Jenkins B using API tokens and credentials.
+
+### Jenkins B
+
+- The triggered job executes a Python program (`hello.py`) that writes a file containing:
+  ```
+  Hello BMC
+  ```
 
 ---
 
@@ -10,126 +25,103 @@ When a job on `jenkins-a` is triggered, it checks a condition and, if met, trigg
 
 ```
 .
-├── docker-compose.yml              # Defines both Jenkins servers
-├── jenkins-a/
-│   ├── Dockerfile                  # Jenkins A Dockerfile
-│   └── scripts/                   # Shell script to check condition and trigger Jenkins B
-├── jenkins-b/
-│   ├── Dockerfile                  # Jenkins B Dockerfile
-│   └── scripts/                   # Contains hello.py (prints "Hello BMC")
-├── README.md                       # You're here
-└── start_jenkins.sh                # Script to start and initialize both Jenkins containers
+├── config                    # Configuration files
+│   └── requirements.txt       # Python dependencies for tests
+├── docker                     # Docker-related files for builds and tests
+│   ├── Dockerfile.base         # Base image shared by other Dockerfiles
+│   ├── Dockerfile.test_ls      # Dockerfile for testing validate_ls.sh
+│   └── Dockerfile.test_python  # Dockerfile for testing Python scripts
+├── docker-compose.yml          # Docker Compose setup for Jenkins services
+├── jenkins-a                   # Jenkins A related setup
+│   ├── Dockerfile              # Dockerfile for Jenkins A
+│   ├── Jenkinsfile             # Jenkins pipeline file for Jenkins A
+│   ├── scripts                 # Scripts used by Jenkins A
+│   │   ├── data                # Data files used by validation script
+│   │   │   └── example_to_trigger_test_b.txt # Example file to trigger Jenkins B
+│   │   ├── monitor_jenkins_b.sh # Monitors triggered Jenkins B job
+│   │   ├── trigger_jenkins_b.sh # Triggers Jenkins B job
+│   │   └── validate_ls.sh       # Script that validates conditions and triggers Jenkins B
+│   └── tests                   # Tests for Jenkins A logic
+│       └── test_validate_ls.py  # Test for validate_ls.sh functionality
+├── jenkins-b                   # Jenkins B related setup
+│   ├── Dockerfile              # Dockerfile for Jenkins B
+│   ├── Jenkinsfile             # Jenkins pipeline file for Jenkins B
+│   ├── scripts                 # Scripts used by Jenkins B
+│   │   └── hello.py             # Example Python script run by Jenkins B
+│   └── tests                   # Tests for Jenkins B logic
+│       └── test_hello_script.py # Test for hello.py script
+├── README.md                   # Project documentation
+├── scripts                     # Helper scripts for managing the project
+│   ├── run_tests.sh             # Shell script to build & run tests via Docker
+│   └── start_jenkins.sh         # Shell script to start Jenkins instances (if exists)
 ```
 
 ---
 
-## How it works
+## Security & Configuration
 
-1. `job-a` on **Jenkins A** runs a shell script: `validate_ls.sh`
-2. The script counts the number of files in `/scripts`
-3. If more than 3 files exist, it:
-
-   * Sends an authenticated API request to trigger `job-b`
-4. `job-b` runs a Python script that writes `Hello BMC` to a file
-5. Console log from `job-b` is printed inside `job-a`
+- **Jenkins A** uses a **username + API token**, stored securely in Jenkins credentials, to authenticate and trigger Jenkins B.
+- **Jenkins B** is configured to allow **remote triggers** using tokens (e.g. `mytoken123`).
+- All sensitive values (such as API tokens, Jenkins B URL) are managed using the **Jenkins credentials manager** — no hardcoded secrets in the code.
 
 ---
 
-## Prerequisites
+## Setup Instructions
 
-* [Docker](https://docs.docker.com/get-docker/)
-* [Docker Compose](https://docs.docker.com/compose/)
+### Jenkins B - Create API Token for remote build
+
+1. Go to **Jenkins B** → `job-b` → **Configure** → Enable\
+   → **Trigger builds remotely (e.g., from scripts)**\
+   → Set **Authentication Token** → `mytoken123`
+
+2. The URL to trigger the build:
+
+   ```
+   http://<JENKINS_B_URL>/job/job-b/build?token=mytoken123
+   ```
+
+   or if parameters:
+
+   ```
+   http://<JENKINS_B_URL>/job/job-b/buildWithParameters?token=mytoken123
+   ```
+
+   *You can also append **`&cause=Triggered+by+Jenkins+A`** to set a build cause.*
 
 ---
 
-## Getting Started
+### Jenkins A - Add required credentials
+
+Go to **Jenkins A** → **Manage Jenkins** → **Credentials** → **(global)** → **Add Credentials**:
+
+| Type                | ID                       | Value                                                          |
+| ------------------- | ------------------------ | -------------------------------------------------------------- |
+| Username + Password | `jenkins_api_token_cred` | **Username:** `admin` / **Password:** your Jenkins B API token |
+| Secret text         | `JENKINS_B_URL`          | `http://jenkins-b:8080`                                        |
+
+These credentials will be referenced in the Jenkinsfile to securely trigger Jenkins B.
+
+---
+
+## How to run
 
 ```bash
-# Clone the repo
-cd bmc_project
-
-# Start both Jenkins instances and reset Jenkins A volume
-./start_jenkins.sh
+./scripts/start_jenkins.sh
 ```
 
-### First-time Setup
-
-After containers are up:
-
-1. Open Jenkins A: [http://localhost:8080](http://localhost:8080)
-2. Open Jenkins B: [http://localhost:8081](http://localhost:8081)
-3. Retrieve admin passwords:
+This will start Jenkins A and B via Docker Compose.
 
 ```bash
-docker exec jenkins-a cat /var/jenkins_home/secrets/initialAdminPassword
-docker exec jenkins-b cat /var/jenkins_home/secrets/initialAdminPassword
+./scripts/run_tests.sh
 ```
 
-4. Finish setup via UI (disable plugin suggestions if desired)
-
-5. **Create a job in Jenkins A named `job-a`**
-
-6. **Configure `job-a` like this**:
-
-   * Type: **Freestyle project**
-   * Build Step: `Execute shell`
-   * Command:
-
-     ```bash
-     /scripts/validate_ls.sh
-     ```
-   * Ensure the job runs as `admin` and environment variables are passed from `.env`
-
-7. **Create a job in Jenkins B named `job-b`**
-
-8. Add token-based triggering in `job-b`:
-
-   * Go to **job-b → Configure**
-   * Enable  **"Trigger builds remotely"**
-   * Set token: `mytoken123` (or any value)
+This will build and run tests in Docker for the project.
 
 ---
 
-## How to Get Jenkins API Token
+## Notes
 
-1. Go to **[http://localhost:8081](http://localhost:8081)** (Jenkins B)
-2. Click on your username (`admin`)
-3. Click **"Configure"** (left menu)
-4. Scroll to **"API Token"** section
-5. Click **"Add new token"**
-6. Name it `bmc_token`, then copy the generated token
-7. Save it in `.env` file in root project folder:
+- Make sure Docker and Docker Compose are installed.
+- Everything comes from Jenkins credentials.
+- Adjust ports and URLs in `docker-compose.yml` if needed.
 
-```env
-JENKINS_B_URL=http://jenkins-b:8080
-TARGET_JOB_NAME=job-b
-JENKINS_USER=admin
-JENKINS_API_TOKEN=your_token_here
-```
-
-> Make sure `docker-compose.yml` includes:
-
-```yaml
-env_file:
-  - .env
-```
-
-Then restart Jenkins A:
-
-```bash
-docker compose restart jenkins-a
-```
-
-
-
-## Clean Up
-
-```bash
-docker compose down -v
-```
-
----
-
-## Developed by
-
-Yaron Mordechai

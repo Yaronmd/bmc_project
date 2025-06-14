@@ -1,4 +1,9 @@
 #!/bin/bash
+
+echo "Fixing docker.sock permissions..."
+sudo chown root:docker /var/run/docker.sock
+sudo chmod 660 /var/run/docker.sock
+
 echo "Cleaning up old Jenkins A volume..."
 docker volume rm -f bmc_project_jenkins-a-data 2>/dev/null
 

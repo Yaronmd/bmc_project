@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-WORKSPACE="/var/jenkins_home/workspace/job-a"
+WORKSPACE="/workspace"
 
 echo "Building common base image..."
 docker build -f ${WORKSPACE}/docker/Dockerfile.base -t test-base ${WORKSPACE}

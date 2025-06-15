@@ -21,6 +21,26 @@ This project demonstrates how **Jenkins A** triggers a job on **Jenkins B** usin
 
 ---
 
+## Running Tests Before Triggering Jenkins B
+
+Before the pipeline triggers the Jenkins B job, it runs automated tests using Docker containers.
+
+### How it works
+- The pipeline executes `/shared-scripts/run_tests.sh`.
+- This script builds and runs:
+  - A base Docker image (`test-base`)
+  - A test container that verifies file listing (`test-ls`)
+  - A test container that runs Python validation (`test-python-file`)
+- If any test fails, the pipeline stops and Jenkins B is **not triggered**.
+
+### Running tests manually (optional)
+You can also run the tests manually:
+```bash
+docker exec jenkins-a /shared-scripts/run_tests.sh
+```
+
+---
+
 ## Project Structure
 
 ```

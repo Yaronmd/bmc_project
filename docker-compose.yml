@@ -12,7 +12,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./docker:/docker
       - ./config:/docker/config
-      # - .:/workspace
+      - .:/workspace
 
   jenkins-b:
     build: ./jenkins-b

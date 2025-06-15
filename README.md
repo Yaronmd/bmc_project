@@ -1,6 +1,9 @@
 ## Jenkins A → Jenkins B Pipeline
 
-This project demonstrates how **Jenkins A** triggers a job on **Jenkins B** using a secure setup with credentials and API tokens. Both Jenkins instances are connected to GitHub for Pipeline as Code using Jenkinsfiles stored in the repository.
+This project demonstrates how **Jenkins A** triggers a job on **Jenkins B** using a secure setup with credentials and API tokens.  
+Both Jenkins instances are configured locally, with Jenkinsfiles included as part of the project files.  
+The system runs automated tests using Docker before triggering Jenkins B, ensuring validation before execution.
+
 ---
 
 ## How it works
